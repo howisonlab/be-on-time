@@ -1,10 +1,10 @@
+
 ## **LED Arduino Sketch / Code Study** 
 
 ``` 
 #include <FastLED.h>
 ```
 FastLED library is used for controlling addressable LED strips
-
 ```
 #define LED_PIN     5
 #define NUM_LEDS    150
@@ -21,7 +21,7 @@ Parameters for LED setup.
  * `LED_TYPE`: type of LED chip
  * `COLOR_ORDER`:  color order of the LEDS (for this it's green-red-blue)
  * `CRGB leds`: declares an array called 'leds' of type `CRGB`(color Red Green Blue), with the size of `NUM_LEDS`. this basically stores the color information for each LED in the strip
-
+ 
 ```
 #define UPDATES_PER_SECOND 100 
 int start_idx; int end_idx;
@@ -43,7 +43,6 @@ void setup() {
     FastLED.show();
     
 }
-
 
 ```
 Setup() Function;
@@ -67,7 +66,6 @@ void loop()
     
 }
 ```
-
 loop() Function;
 -   `count_5seconds()` and `count_15seconds()` functions are called, which will fill a segment of LEDs with red color for 5 and 15 seconds, respectively.
 -   `FastLED.show()` is used to update the LEDs.
@@ -91,7 +89,6 @@ void count_5seconds(){
 -  `FillLED()` : to set a segment of LEDs to red.
 -   `start_idx` and `end_idx` are incremented by 10.
 -   If `end_idx` becomes greater than or equal to `NUM_LEDS`, the program exits
-
 ```
 void count_15seconds(){
     delay(15000);
