@@ -1,0 +1,41 @@
+#include <FastLED.h>
+
+#define LED_PIN     34
+#define NUM_LEDS    25
+#define BRIGHTNESS  64
+#define LED_TYPE    WS2811
+#define COLOR_ORDER GRB
+CRGB leds[NUM_LEDS];
+
+#define UPDATES_PER_SECOND 100
+
+int current_idx = 0; // Current LED to light up
+
+void setup() {
+    Serial.begin(9600);
+    delay(3000); // power-up safety delay
+    FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+    FastLED.setBrightness(BRIGHTNESS);
+    for(int i = 0; i < NUM_LEDS; i++) {
+      leds[i] = CRGB(0,0,0);
+    }
+    FastLED.show();
+}
+
+void loop() {
+    if(current_idx < NUM_LEDS) {
+        leds[current_idx] = CRGB(255, 0, 0); // Set current LED to red
+        FastLED.show();
+        delay(4000); // Wait for 4 seconds
+        current_idx++; // Move to the next LED
+    }
+
+    // If you want the pattern to repeat endlessly, uncomment the following lines:
+    // else {
+    //     // Reset the strip and start over
+    //     for(int i = 0; i < NUM_LEDS; i++) {
+    //       leds[i] = CRGB(0,0,0);
+    //     }
+    //     current_idx = 0; // Reset index to start the pattern over
+    // }
+}
