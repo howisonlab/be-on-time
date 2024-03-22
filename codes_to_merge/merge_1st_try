@@ -1,0 +1,266 @@
+#include <FastLED.h>
+#include <math.h>
+
+// LED Strip Configuration
+#define LED_PIN         34
+#define NUM_LEDS        25
+#define BRIGHTNESS      64
+#define LED_TYPE        WS2811
+#define COLOR_ORDER     GRB
+CRGB leds[NUM_LEDS];
+
+// Timing Configuration
+unsigned long previousMillis = 0; // Previous time LEDs were updated
+const long ledInterval = 5000;    // Interval at which to activate the next LED (5 seconds)
+
+// 7-Segment Display Configuration
+int digit_pin[] = {6, 9, 10, 11}; // PWM Display digit pins from left to right
+int speakerPin = 15;
+int segA = 2, segB = 3, segC = 4, segD = 5, segE = A0, segF = 7, segG = 8;
+int button1 = 13, button2 = 12, button3 = 16, button4 = 17;
+int countdown_time = 3;
+
+#define DIGIT_ON  LOW
+#define DIGIT_OFF HIGH
+
+struct struct_digits {
+    int digit[4];
+};
+
+void setup() {
+    Serial.begin(9600);
+    delay(3000); // Power-up safety delay
+    FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+    FastLED.setBrightness(BRIGHTNESS);
+    FastLED.clear();
+    FastLED.show(); // Initialize LEDs to off
+
+    // Setup pins for 7-segment display
+    int segmentPins[] = {segA, segB, segC, segD, segE, segF, segG};
+    for (int pin : segmentPins) pinMode(pin, OUTPUT);
+    for (int pin : digit_pin) pinMode(pin, OUTPUT);
+    pinMode(speakerPin, OUTPUT);
+
+    // Setup button pins
+    pinMode(button1, INPUT_PULLUP);
+    pinMode(button2, INPUT_PULLUP);
+    pinMode(button3, INPUT_PULLUP);
+    pinMode(button4, INPUT_PULLUP);
+}
+
+void loop() {
+    unsigned long currentMillis = millis();
+
+    // Update LED strip based on timer
+    if (currentMillis - previousMillis >= ledInterval) {
+        previousMillis = currentMillis;
+        updateLEDs(); // Update the LEDs based on the timing logic
+    }
+
+    // Continuously handle countdown and display logic
+    if (Countdown(countdown_time, 962)) {
+        // Handle what happens when the countdown completes
+        // Reset or perform an action
+    }
+    // Resetting or updating the countdown based on button inputs can be included here
+}
+
+void updateLEDs() {
+    static int currentLED = 0; // Track the current LED index
+    leds[currentLED] = CRGB::Red; // Set current LED to red
+    currentLED = (currentLED + 1) % NUM_LEDS; // Move to the next LED, wrap around if necessary
+    FastLED.show();
+}
+
+// Include definitions of other functions here (playTone, lightNumber, SwitchDigit, IntToDigits, PrintNumber, Countdown)
+
+// Note: Ensure you maintain a single, consolidated version of each function and avoid duplicating code.
+
+
+void  playTone(int tone, int duration) {
+  for (long k = 0; k < duration * 1000L; k  += tone * 2) {  
+    digitalWrite(speakerPin, HIGH);
+    delayMicroseconds(tone);
+    digitalWrite(speakerPin, LOW);
+    delayMicroseconds(tone);
+  }
+}
+
+
+void  lightNumber(int numberToDisplay) {
+
+#define SEGMENT_ON  HIGH
+#define SEGMENT_OFF  LOW
+
+  switch (numberToDisplay){
+
+  case 0:
+    digitalWrite(segA,  SEGMENT_ON);
+    digitalWrite(segB, SEGMENT_ON);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE, SEGMENT_ON);
+    digitalWrite(segF,  SEGMENT_ON);
+    digitalWrite(segG, SEGMENT_OFF);
+    break;
+
+  case  1:
+    digitalWrite(segA, SEGMENT_OFF);
+    digitalWrite(segB, SEGMENT_ON);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD, SEGMENT_OFF);
+    digitalWrite(segE, SEGMENT_OFF);
+    digitalWrite(segF, SEGMENT_OFF);
+    digitalWrite(segG, SEGMENT_OFF);
+    break;
+
+  case 2:
+    digitalWrite(segA,  SEGMENT_ON);
+    digitalWrite(segB, SEGMENT_ON);
+    digitalWrite(segC, SEGMENT_OFF);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE, SEGMENT_ON);
+    digitalWrite(segF,  SEGMENT_OFF);
+    digitalWrite(segG, SEGMENT_ON);
+    break;
+
+  case  3:
+    digitalWrite(segA, SEGMENT_ON);
+    digitalWrite(segB, SEGMENT_ON);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE,  SEGMENT_OFF);
+    digitalWrite(segF, SEGMENT_OFF);
+    digitalWrite(segG,  SEGMENT_ON);
+    break;
+
+  case 4:
+    digitalWrite(segA, SEGMENT_OFF);
+    digitalWrite(segB, SEGMENT_ON);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD,  SEGMENT_OFF);
+    digitalWrite(segE, SEGMENT_OFF);
+    digitalWrite(segF,  SEGMENT_ON);
+    digitalWrite(segG, SEGMENT_ON);
+    break;
+
+  case  5:
+    digitalWrite(segA, SEGMENT_ON);
+    digitalWrite(segB, SEGMENT_OFF);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE,  SEGMENT_OFF);
+    digitalWrite(segF, SEGMENT_ON);
+    digitalWrite(segG, SEGMENT_ON);
+    break;
+
+  case 6:
+    digitalWrite(segA, SEGMENT_ON);
+    digitalWrite(segB,  SEGMENT_OFF);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE, SEGMENT_ON);
+    digitalWrite(segF, SEGMENT_ON);
+    digitalWrite(segG,  SEGMENT_ON);
+    break;
+
+  case 7:
+    digitalWrite(segA, SEGMENT_ON);
+    digitalWrite(segB, SEGMENT_ON);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD,  SEGMENT_OFF);
+    digitalWrite(segE, SEGMENT_OFF);
+    digitalWrite(segF,  SEGMENT_OFF);
+    digitalWrite(segG, SEGMENT_OFF);
+    break;
+
+  case  8:
+    digitalWrite(segA, SEGMENT_ON);
+    digitalWrite(segB, SEGMENT_ON);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE,  SEGMENT_ON);
+    digitalWrite(segF, SEGMENT_ON);
+    digitalWrite(segG, SEGMENT_ON);
+    break;
+
+  case 9:
+    digitalWrite(segA, SEGMENT_ON);
+    digitalWrite(segB,  SEGMENT_ON);
+    digitalWrite(segC, SEGMENT_ON);
+    digitalWrite(segD, SEGMENT_ON);
+    digitalWrite(segE, SEGMENT_OFF);
+    digitalWrite(segF, SEGMENT_ON);
+    digitalWrite(segG, SEGMENT_ON);
+    break;
+
+  case 10:
+    digitalWrite(segA,  SEGMENT_OFF);
+    digitalWrite(segB, SEGMENT_OFF);
+    digitalWrite(segC,  SEGMENT_OFF);
+    digitalWrite(segD, SEGMENT_OFF);
+    digitalWrite(segE,  SEGMENT_OFF);
+    digitalWrite(segF, SEGMENT_OFF);
+    digitalWrite(segG,  SEGMENT_OFF);
+    break;  
+  }
+ 
+}
+void SwitchDigit(int  digit) {
+  for (int i=0; i<4; i++) {
+    if (i == digit) {
+      digitalWrite(digit_pin[i],  DIGIT_ON);
+    } else {
+      digitalWrite(digit_pin[i], DIGIT_OFF);
+    }
+  }
+}
+
+struct struct_digits IntToDigits(int n){
+  struct struct_digits  dig;
+  int zeros=0;
+  int d;
+  for (int i=0; i<4; i++) {
+    d=n/pow(10,3-i);
+    zeros += d;
+    n = n - d*pow(10,3-i);
+    if (zeros!=0 || i==3) {
+      dig.digit[i]=d;
+    } else {
+      dig.digit[i]=10;
+    }
+  }
+  return dig;
+}
+
+void PrintNumber(int n, int time) {
+  struct struct_digits  dig;
+
+  dig = IntToDigits(n);
+  
+  for (int i=0; i<= time/20; i++) {
+    if (digitalRead(button2)==LOW) {
+      return;
+    }
+    for (int j=0;  j<4; j++) {
+      SwitchDigit(j);
+      lightNumber(dig.digit[j]);
+      delay(5);
+    }
+  }
+}
+
+
+bool Countdown(int n, int del){
+  for (int q=n;  q>0; q--){
+    PrintNumber(q,del);
+    if (digitalRead(button2)==LOW) {
+      return false;
+    }
+  }
+  PrintNumber(0,0);
+  playTone(1519,1000);
+  return true;
+}
+
+
