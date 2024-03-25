@@ -1,0 +1,40 @@
+#include "FastLED.h"
+
+#define PIN_SLIDE_POT_A A0 // input pin of the slide pot
+#define MAX_SLIDE_POT_ANALGOG_READ_VALUE 700 // maximum voltage as analog-to-digital converted value, depends on the voltage level of the VCC pin. Examples: 5V = 1023; 3.3V ~700
+
+#define NUM_LEDS 25 // add number of LEDs of your RGB LED strip
+#define PIN_LED 3 // digital output PIN that is connected to DIN of the RGB LED strip
+#define LED_COLOR CRGB::DarkOrchid // see https://github.com/FastLED/FastLED/wiki/Pixel-reference for a full list, e.g. CRGB::AliceBlue, CRGB::Amethyst, CRGB::AntiqueWhite...
+
+CRGB rgb_led[NUM_LEDS]; // color array of the LED RGB strip
+
+void setup() {
+  Serial.begin(9600);
+  
+  pinMode(PIN_SLIDE_POT_A, INPUT);
+  FastLED.addLeds<WS2812B, PIN_LED>(rgb_led, NUM_LEDS);  
+  
+  Serial.println("Setup done.");
+}
+
+void loop() {
+  // 1) Analog value of slide pot is read
+  int value_slide_pot_a = analogRead(PIN_SLIDE_POT_A);
+  Serial.print("Slide Pot value: ");
+  Serial.println(value_slide_pot_a);
+
+  // 2) Analog value is mapped from slide pot range (analog input value) to led range (number of LEDs)
+  int num_leds_switchedon = map(value_slide_pot_a, 0, MAX_SLIDE_POT_ANALGOG_READ_VALUE, 0, NUM_LEDS);  
+
+
+  // 3) Light up the LEDs
+  // Only LEDs are switched on which correspond to the area left of the slide knob
+  for (int i = 0; i < num_leds_switchedon; ++i) {
+    rgb_led[i] = LED_COLOR;
+  }  
+  // LEDs are switched off which correspond to the area right of the slide knob
+  for (int i = num_leds_switchedon; i < NUM_LEDS; ++i) {
+    rgb_led[i] = CRGB::Black;
+  }
+  FastLED.show();}
