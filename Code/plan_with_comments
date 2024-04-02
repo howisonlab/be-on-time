@@ -1,0 +1,37 @@
+// Include libraries
+
+// Define pin connections for buttons, speaker, and display segments
+
+// Define initial countdown time and state variables for the modes
+
+// Setup function to initialize pin modes and any necessary startup routines
+
+// Main loop function
+  // Check if in Program Mode
+    // If "+" button is pressed, increase countdown time by 1 second
+    // If "-" button is pressed, decrease countdown time by 1 second, ensuring it doesn't go below a minimum value, e.g., 1 second
+    // If "Start" button is pressed, switch to Countdown Mode
+  
+  // Check if in Countdown Mode
+    // Display the countdown time on the digital display
+    // Decrease countdown time every second
+    // If countdown reaches 0, play a sound or perform an action
+
+// Function to handle button debouncing for reliable button presses
+
+// Function to display numbers on the digital display
+  // Break down the number into individual digits
+  // Display each digit on the appropriate segment of the display
+
+// Function to start the countdown
+  // Use a non-blocking delay to keep the countdown running
+  // Update the display with the remaining time
+
+// Function to switch modes between Program Mode and Countdown Mode
+
+// Function to play a tone when the countdown reaches zero
+
+// Function to read and process button inputs
+  // Detect button presses and release events
+  // Adjust the countdown time in Program Mode
+  // Start or stop the countdown in Countdown Mode
